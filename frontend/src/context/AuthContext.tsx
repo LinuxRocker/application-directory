@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { authApi } from '../services/api';
 import { UserInfo } from '../types';
 
@@ -26,7 +26,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<UserInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const checkAuth = async () => {
+  const checkAuth = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
@@ -40,13 +40,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  const login = () => {
+  const login = useCallback(() => {
     authApi.login();
-  };
+  }, []);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
       await authApi.logout();
       setIsAuthenticated(false);
@@ -55,11 +55,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (err) {
       setError('Failed to logout');
     }
-  };
+  }, []);
 
   useEffect(() => {
     checkAuth();
-  }, []);
+  }, [checkAuth]);
 
   const value: AuthContextType = {
     isAuthenticated,

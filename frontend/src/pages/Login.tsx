@@ -3,8 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
 export const Login: React.FC = () => {
-  const { isAuthenticated, login } = useAuth();
+  const { isAuthenticated, login, checkAuth } = useAuth();
   const navigate = useNavigate();
+
+  // Re-check auth status when landing on login page to clear stale state
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
 
   useEffect(() => {
     if (isAuthenticated) {

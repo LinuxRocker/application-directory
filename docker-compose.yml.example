@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend/src:/app/src
+      - ./config:/app/config
+    environment:
+      # Application
+      - NODE_ENV=development
+      - PORT=3000
+      - LOG_LEVEL=info
+
+      # Keycloak OIDC Configuration
+      - KEYCLOAK_ISSUER=https://your-keycloak.com/realms/your-realm
+      - KEYCLOAK_CLIENT_ID=your-client-id
+      - KEYCLOAK_CLIENT_SECRET=your-client-secret-here
+      - KEYCLOAK_REDIRECT_URI=http://localhost:3000/api/auth/callback
+
+      # Session Configuration
+      - SESSION_SECRET=change-this-to-a-random-secret-min-32-characters-long
+      - SESSION_MAX_AGE=86400000
+      - SESSION_SECURE=false
+      - SESSION_SAME_SITE=lax
+
+      # Redis
+      - USE_REDIS_SESSIONS=true
+      - REDIS_URL=redis://redis:6379
+
+      # Security
+      - CORS_ORIGIN=http://localhost:5173
+      - CSRF_ENABLED=false
+
+      # Application Config
+      - CONFIG_PATH=./config/apps.yaml
+      - CONFIG_WATCH=true
+    command: npm run dev
+    depends_on:
+      - redis
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://backend:3000
+    command: npm run dev
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+volumes:
+  redis-data:

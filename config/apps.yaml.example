@@ -1,0 +1,103 @@
+# Application Directory Configuration
+# Hierarchical category-based application structure
+# If groups/adminGroups are not specified, the app is accessible to all authenticated users
+# Keycloak groups have a leading slash (e.g., /grafana-admin)
+
+categories:
+  media:
+    name: "Media & Entertainment"
+    icon: "fa-film"
+    order: 1
+    description: "Streaming and media management"
+    apps:
+      - id: "plex"
+        name: "Plex"
+        description: "Media streaming server"
+        url: "https://plex.example.com"
+        icon: "fa-play"
+        # No groups = public to all authenticated users
+
+      - id: "jellyfin"
+        name: "Jellyfin"
+        description: "Alternative media server"
+        url: "https://jellyfin.example.com"
+        icon: "fa-tv"
+        groups:
+          - "/media-users"
+        adminGroups:
+          - "/media-admin"
+
+  productivity:
+    name: "Productivity"
+    icon: "fa-briefcase"
+    order: 2
+    description: "Productivity and collaboration tools"
+    apps:
+      - id: "nextcloud"
+        name: "Nextcloud"
+        description: "Cloud storage and collaboration"
+        url: "https://cloud.example.com"
+        icon: "fa-cloud"
+        groups:
+          - "/nextcloud-users"
+        adminGroups:
+          - "/nextcloud-admin"
+
+  monitoring:
+    name: "Monitoring"
+    icon: "fa-chart-line"
+    order: 3
+    description: "Monitoring and observability"
+    apps:
+      - id: "grafana"
+        name: "Grafana"
+        description: "Metrics and monitoring dashboards"
+        url: "https://grafana.example.com"
+        icon: "fa-chart-bar"
+        groups:
+          - "/grafana-viewer"
+          - "/grafana-editor"
+        adminGroups:
+          - "/grafana-admin"
+
+  development:
+    name: "Development"
+    icon: "fa-code"
+    order: 4
+    description: "Development tools"
+    apps:
+      - id: "gitea"
+        name: "Gitea"
+        description: "Self-hosted Git service"
+        url: "https://git.example.com"
+        icon: "fa-code-branch"
+        # No groups = public to all authenticated users
+
+  utilities:
+    name: "Utilities"
+    icon: "fa-wrench"
+    order: 5
+    description: "General utilities"
+    apps:
+      - id: "vaultwarden"
+        name: "Vaultwarden"
+        description: "Password manager"
+        url: "https://vault.example.com"
+        icon: "fa-key"
+        # No groups = public to all authenticated users
+
+  admin:
+    name: "Admin Tools"
+    icon: "fa-screwdriver-wrench"
+    order: 6
+    description: "Administrative tools"
+    apps:
+      - id: "portainer"
+        name: "Portainer"
+        description: "Container management"
+        url: "https://portainer.example.com"
+        icon: "fa-docker"
+        groups:
+          - "/sysadmins"
+        adminGroups:
+          - "/sysadmins"

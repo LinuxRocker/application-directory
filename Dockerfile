@@ -1,46 +1,69 @@
-# Stage 1: Build frontend
+# Stage 1: Install dependencies
+FROM node:20-alpine AS deps
+
+WORKDIR /app
+
+# Copy workspace package files
+COPY package*.json ./
+COPY backend/package*.json ./backend/
+COPY frontend/package*.json ./frontend/
+
+# Install all dependencies (workspaces)
+RUN npm ci
+
+# Stage 2: Build frontend
 FROM node:20-alpine AS frontend-build
 
-WORKDIR /app/frontend
+WORKDIR /app
 
-COPY frontend/package*.json ./
-RUN npm ci
+# Copy dependencies from deps stage
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/frontend/node_modules ./frontend/node_modules
 
-COPY frontend/ ./
-RUN npm run build
+# Copy frontend source
+COPY frontend/ ./frontend/
+COPY package*.json ./
 
-# Stage 2: Build backend
+# Build frontend
+RUN npm run build:frontend
+
+# Stage 3: Build backend
 FROM node:20-alpine AS backend-build
 
-WORKDIR /app/backend
+WORKDIR /app
 
-COPY backend/package*.json ./
-RUN npm ci
+# Copy dependencies from deps stage
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/backend/node_modules ./backend/node_modules
 
-COPY backend/ ./
-RUN npm run build
+# Copy backend source
+COPY backend/ ./backend/
+COPY package*.json ./
 
-# Stage 3: Production
+# Build backend
+RUN npm run build:backend
+
+# Stage 4: Production
 FROM node:20-alpine
 
 WORKDIR /app
 
-# Install nginx
+# Install runtime dependencies
 RUN apk add --no-cache nginx supervisor
 
-# Copy backend
+# Copy built backend
 COPY --from=backend-build /app/backend/dist ./backend/dist
 COPY --from=backend-build /app/backend/node_modules ./backend/node_modules
 COPY --from=backend-build /app/backend/package.json ./backend/
 
-# Copy frontend
+# Copy built frontend
 COPY --from=frontend-build /app/frontend/dist ./frontend/dist
 
 # Copy nginx config
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
 
-# Copy application config
-COPY config ./config
+# Copy application config example
+COPY config/apps.yaml.example ./config/apps.yaml.example
 
 # Create supervisor config
 RUN mkdir -p /var/log/supervisor

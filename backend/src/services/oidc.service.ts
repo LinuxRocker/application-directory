@@ -9,7 +9,13 @@ export class OidcService {
     const { codeVerifier, codeChallenge } = await generatePKCE();
     const state = generateState();
 
+    const redirectUri = config.clientMetadata().redirect_uri;
+    if (!redirectUri) {
+      throw new Error('Redirect URI not configured');
+    }
+
     const url = client.buildAuthorizationUrl(config, {
+      redirect_uri: String(redirectUri),
       scope: 'openid profile email',
       code_challenge: codeChallenge,
       code_challenge_method: 'S256',

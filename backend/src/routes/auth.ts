@@ -12,12 +12,20 @@ router.get('/login', authRateLimiter, (req: Request, res: Response) => {
     req.session.codeVerifier = codeVerifier;
     req.session.state = state;
 
-    logger.info('Redirecting to Keycloak for authentication');
+    // Save session before redirect to ensure state is persisted
+    req.session.save((err) => {
+      if (err) {
+        logger.error('Failed to save session', { error: err });
+        return res.status(500).json({ error: 'Failed to initiate login' });
+      }
 
-    res.redirect(url);
+      logger.info('Redirecting to Keycloak for authentication');
+      return res.redirect(url);
+    });
+    return; // Explicitly return after async callback
   } catch (error) {
     logger.error('Error in login route', { error });
-    res.status(500).json({ error: 'Failed to initiate login' });
+    return res.status(500).json({ error: 'Failed to initiate login' });
   }
 });
 

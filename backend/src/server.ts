@@ -2,7 +2,6 @@ import express from 'express';
 import https from 'https';
 import fs from 'fs';
 import path from 'path';
-import cookieParser from 'cookie-parser';
 import { config, initializeOidcClient } from './config';
 import { configService } from './services/config.service';
 import {
@@ -80,7 +79,6 @@ async function startServer() {
 
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
-    app.use(cookieParser());
 
     app.use(sessionMiddleware);
 

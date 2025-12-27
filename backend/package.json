@@ -11,35 +11,33 @@
     "test": "jest"
   },
   "dependencies": {
-    "express": "^5.0.0",
-    "express-session": "^1.17.3",
-    "connect-redis": "^9.0.0",
-    "redis": "^5.0.0",
-    "openid-client": "^6.0.0",
-    "helmet": "^8.0.0",
-    "cors": "^2.8.5",
+    "chokidar": "^5.0.0",
     "compression": "^1.7.4",
-    "express-rate-limit": "^8.0.0",
-    "winston": "^3.11.0",
-    "yaml": "^2.3.4",
-    "joi": "^18.0.0",
+    "connect-redis": "^9.0.0",
+    "cors": "^2.8.5",
     "dotenv": "^17.0.0",
-    "cookie-parser": "^1.4.6",
-    "chokidar": "^5.0.0"
+    "express": "^5.0.0",
+    "express-rate-limit": "^8.0.0",
+    "express-session": "^1.17.3",
+    "helmet": "^8.0.0",
+    "joi": "^18.0.0",
+    "openid-client": "^6.0.0",
+    "redis": "^5.0.0",
+    "winston": "^3.11.0",
+    "yaml": "^2.3.4"
   },
   "devDependencies": {
+    "@types/compression": "^1.7.5",
+    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/express-session": "^1.17.10",
+    "@types/jest": "^30.0.0",
     "@types/node": "^24.0.0",
-    "@types/cors": "^2.8.17",
-    "@types/compression": "^1.7.5",
-    "@types/cookie-parser": "^1.4.6",
-    "typescript": "^5.3.3",
-    "tsx": "^4.7.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "eslint": "^9.0.0",
     "jest": "^30.0.0",
-    "@types/jest": "^30.0.0"
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
   }
 }

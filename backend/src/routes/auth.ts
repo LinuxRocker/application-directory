@@ -107,6 +107,7 @@ router.post('/logout', async (req: Request, res: Response) => {
       res.clearCookie('homelab.sid');
       return res.json({ message: 'Logged out successfully' });
     });
+    return; // Explicitly return to satisfy TypeScript
   } catch (error) {
     logger.error('Error in logout route', { error });
     return res.status(500).json({ error: 'Failed to logout' });

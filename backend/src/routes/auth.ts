@@ -99,13 +99,13 @@ router.post('/logout', async (req: Request, res: Response) => {
       logger.info('User logged out', { userId: req.session.userId });
     }
 
-    return req.session.destroy((err) => {
+    req.session.destroy((err) => {
       if (err) {
         logger.error('Failed to destroy session', { error: err });
         return res.status(500).json({ error: 'Failed to logout' });
       }
       res.clearCookie('homelab.sid');
-      res.json({ message: 'Logged out successfully' });
+      return res.json({ message: 'Logged out successfully' });
     });
   } catch (error) {
     logger.error('Error in logout route', { error });

@@ -44,7 +44,7 @@ router.get('/search', requireAuth, (req: Request, res: Response) => {
     const userGroups = req.session.userGroups || [];
     const results = appsService.searchApps(query, userGroups);
 
-    res.json({
+    return res.json({
       results,
     });
   } catch (error) {

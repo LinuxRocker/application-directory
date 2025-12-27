@@ -214,7 +214,41 @@ just check           # Run all checks
 
 ## Production Deployment
 
-### Docker Build
+### Using Pre-built Images
+
+Pre-built Docker images are automatically built and published via GitHub Actions to GitHub Container Registry.
+
+**Available tags:**
+- `ghcr.io/linuxrocker/application-directory:latest` - Latest stable release
+- `ghcr.io/linuxrocker/application-directory:master` - Latest commit to master branch
+- `ghcr.io/linuxrocker/application-directory:v1.0.0` - Specific version tag
+
+**Quick start with pre-built image:**
+
+```bash
+# Pull the latest release
+docker pull ghcr.io/linuxrocker/application-directory:latest
+
+# Run the container
+docker run -d \
+  --name application-directory \
+  -p 80:80 \
+  -v $(pwd)/config:/app/config \
+  -e KEYCLOAK_ISSUER=https://your-keycloak.com/realms/dashboard \
+  -e KEYCLOAK_CLIENT_ID=application-directory \
+  -e KEYCLOAK_CLIENT_SECRET=your-secret \
+  -e KEYCLOAK_REDIRECT_URI=https://dashboard.example.com/api/auth/callback \
+  -e SESSION_SECRET=your-strong-secret \
+  -e SESSION_SECURE=true \
+  -e CORS_ORIGIN=https://dashboard.example.com \
+  -e USE_REDIS_SESSIONS=true \
+  -e REDIS_URL=redis://your-redis:6379 \
+  ghcr.io/linuxrocker/application-directory:latest
+```
+
+### Building From Source
+
+If you prefer to build the image yourself:
 
 ```bash
 # Build the Docker image
@@ -246,14 +280,25 @@ version: '3.8'
 
 services:
   dashboard:
-    image: application-directory:latest
+    image: ghcr.io/linuxrocker/application-directory:latest
     ports:
       - "80:80"
     volumes:
       - ./config:/app/config
-    env_file:
-      - .env.production
+    environment:
+      - KEYCLOAK_ISSUER=https://your-keycloak.com/realms/dashboard
+      - KEYCLOAK_CLIENT_ID=application-directory
+      - KEYCLOAK_CLIENT_SECRET=your-secret
+      - KEYCLOAK_REDIRECT_URI=https://dashboard.example.com/api/auth/callback
+      - SESSION_SECRET=your-strong-secret
+      - SESSION_SECURE=true
+      - CORS_ORIGIN=https://dashboard.example.com
+      - USE_REDIS_SESSIONS=true
+      - REDIS_URL=redis://redis:6379
+      - CONFIG_PATH=/app/config/apps.yaml
     restart: unless-stopped
+    depends_on:
+      - redis
 
   redis:
     image: redis:7-alpine
@@ -268,6 +313,8 @@ volumes:
 ```bash
 docker-compose -f docker-compose.prod.yml up -d
 ```
+
+**Tip:** Use `:master` tag for bleeding-edge updates or pin to a specific version like `:v1.0.0` for stability.
 
 ## Configuration Guide
 
@@ -372,6 +419,44 @@ Use Font Awesome 6 Free icon classes:
 - `GET /api/apps` - Get filtered apps by category
 - `GET /api/apps/categories` - Get all categories
 - `GET /api/apps/search?q=query` - Search apps
+
+## CI/CD and Automated Builds
+
+This project uses GitHub Actions to automatically build and publish Docker images to GitHub Container Registry.
+
+### Automatic Builds
+
+**On push to `master` branch:**
+- Builds and pushes image tagged as `master`
+- Use this for development/testing with latest changes
+
+**On GitHub release:**
+- Builds and pushes image with version tags (e.g., `v1.0.0`, `1.0`, `1`)
+- Also tags as `latest` for easy production deployment
+- Multi-architecture support (amd64, arm64)
+
+### Creating a Release
+
+1. Create a new tag and release on GitHub:
+   ```bash
+   git tag -a v1.0.0 -m "Release version 1.0.0"
+   git push origin v1.0.0
+   ```
+
+2. Go to GitHub → Releases → Create new release
+3. Select the tag you just created
+4. Add release notes
+5. Publish the release
+
+6. GitHub Actions will automatically build and push:
+   - `ghcr.io/linuxrocker/application-directory:latest`
+   - `ghcr.io/linuxrocker/application-directory:v1.0.0`
+   - `ghcr.io/linuxrocker/application-directory:1.0`
+   - `ghcr.io/linuxrocker/application-directory:1`
+
+### Viewing Build Status
+
+Check the "Actions" tab in the GitHub repository to monitor build progress and status.
 
 ## Security Considerations
 

@@ -1,7 +1,7 @@
 {
-  "name": "homelab-user-dashboard",
+  "name": "application-directory",
   "version": "1.0.0",
-  "description": "Keycloak-authenticated dashboard for homelab applications",
+  "description": "Keycloak-authenticated application directory",
   "private": true,
   "workspaces": [
     "backend",

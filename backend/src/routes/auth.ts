@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { oidcService } from '../services/oidc.service';
 import { authRateLimiter } from '../middleware/security';
+import { optionalAuth } from '../middleware/auth';
 import logger from '../utils/logger';
 
 const router = Router();
@@ -122,7 +123,7 @@ router.post('/logout', async (req: Request, res: Response) => {
   }
 });
 
-router.get('/status', (req: Request, res: Response) => {
+router.get('/status', optionalAuth, (req: Request, res: Response) => {
   const isAuthenticated = !!(
     req.session.accessToken && req.session.tokenExpiry
   );

@@ -25,29 +25,34 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<UserInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const checkingRef = React.useRef(false);
+  const checkingPromiseRef = React.useRef<Promise<void> | null>(null);
 
   const checkAuth = useCallback(async () => {
-    // Prevent concurrent auth checks
-    if (checkingRef.current) {
-      return;
+    // If already checking, wait for that check to complete
+    if (checkingPromiseRef.current) {
+      return checkingPromiseRef.current;
     }
 
-    try {
-      checkingRef.current = true;
-      setIsLoading(true);
-      setError(null);
-      const status = await authApi.checkStatus();
-      setIsAuthenticated(status.authenticated);
-      setUser(status.user);
-    } catch (err) {
-      setError('Failed to check authentication status');
-      setIsAuthenticated(false);
-      setUser(null);
-    } finally {
-      setIsLoading(false);
-      checkingRef.current = false;
-    }
+    // Start new check
+    const checkPromise = (async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const status = await authApi.checkStatus();
+        setIsAuthenticated(status.authenticated);
+        setUser(status.user);
+      } catch (err) {
+        setError('Failed to check authentication status');
+        setIsAuthenticated(false);
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+        checkingPromiseRef.current = null;
+      }
+    })();
+
+    checkingPromiseRef.current = checkPromise;
+    return checkPromise;
   }, []);
 
   const login = useCallback(() => {

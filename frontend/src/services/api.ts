@@ -12,15 +12,8 @@ const api = axios.create({
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Don't redirect on 401 for auth status checks - that's expected when not logged in
-    const isAuthStatusCheck = error.config?.url?.includes('/auth/status');
-
-    if (error.response?.status === 401 && !isAuthStatusCheck) {
-      // Only redirect if we're not already on the login page
-      if (window.location.pathname !== '/login') {
-        window.location.href = '/login';
-      }
-    }
+    // Don't handle 401s in the interceptor - let individual components handle them
+    // The ProtectedRoute will handle redirecting to login based on auth state
     return Promise.reject(error);
   }
 );

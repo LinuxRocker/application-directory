@@ -1,33 +1,36 @@
-import { Issuer, Client, generators } from 'openid-client';
+import * as client from 'openid-client';
 import { config } from './env';
 import logger from '../utils/logger';
 
-let oidcClient: Client | null = null;
+let oidcConfig: client.Configuration | null = null;
 
-export async function initializeOidcClient(): Promise<Client> {
+export async function initializeOidcClient(): Promise<client.Configuration> {
   try {
     logger.info('Discovering OIDC issuer...', {
       issuer: config.keycloak.issuer,
     });
 
-    const issuer = await Issuer.discover(config.keycloak.issuer);
+    const issuerUrl = new URL(config.keycloak.issuer);
+
+    oidcConfig = await client.discovery(
+      issuerUrl,
+      config.keycloak.clientId,
+      {
+        client_secret: config.keycloak.clientSecret,
+        redirect_uri: config.keycloak.redirectUri,
+      },
+      client.ClientSecretPost(config.keycloak.clientSecret)
+    );
 
     logger.info('OIDC issuer discovered', {
-      issuer: issuer.issuer,
-      authorizationEndpoint: issuer.metadata.authorization_endpoint,
-      tokenEndpoint: issuer.metadata.token_endpoint,
-    });
-
-    oidcClient = new issuer.Client({
-      client_id: config.keycloak.clientId,
-      client_secret: config.keycloak.clientSecret,
-      redirect_uris: [config.keycloak.redirectUri],
-      response_types: ['code'],
+      issuer: oidcConfig.serverMetadata().issuer,
+      authorizationEndpoint: oidcConfig.serverMetadata().authorization_endpoint,
+      tokenEndpoint: oidcConfig.serverMetadata().token_endpoint,
     });
 
     logger.info('OIDC client initialized successfully');
 
-    return oidcClient;
+    return oidcConfig;
   } catch (error: any) {
     logger.error('Failed to initialize OIDC client', {
       error: error?.message || error,
@@ -40,19 +43,19 @@ export async function initializeOidcClient(): Promise<Client> {
   }
 }
 
-export function getOidcClient(): Client {
-  if (!oidcClient) {
+export function getOidcClient(): client.Configuration {
+  if (!oidcConfig) {
     throw new Error('OIDC client not initialized. Call initializeOidcClient() first.');
   }
-  return oidcClient;
+  return oidcConfig;
 }
 
-export function generatePKCE() {
-  const codeVerifier = generators.codeVerifier();
-  const codeChallenge = generators.codeChallenge(codeVerifier);
+export async function generatePKCE() {
+  const codeVerifier = client.randomPKCECodeVerifier();
+  const codeChallenge = await client.calculatePKCECodeChallenge(codeVerifier);
   return { codeVerifier, codeChallenge };
 }
 
 export function generateState(): string {
-  return generators.state();
+  return client.randomState();
 }

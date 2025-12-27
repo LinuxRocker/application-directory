@@ -5,9 +5,9 @@ import logger from '../utils/logger';
 
 const router = Router();
 
-router.get('/login', authRateLimiter, (req: Request, res: Response) => {
+router.get('/login', authRateLimiter, async (req: Request, res: Response) => {
   try {
-    const { url, codeVerifier, state } = oidcService.getAuthorizationUrl();
+    const { url, codeVerifier, state } = await oidcService.getAuthorizationUrl();
 
     req.session.codeVerifier = codeVerifier;
     req.session.state = state;

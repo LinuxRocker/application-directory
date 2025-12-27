@@ -1,7 +1,7 @@
 import fs from 'fs';
 import YAML from 'yaml';
 import Joi from 'joi';
-import chokidar from 'chokidar';
+import chokidar, { FSWatcher } from 'chokidar';
 import { config } from '../config';
 import { AppConfig, Category, CategoryData } from '../types';
 import logger from '../utils/logger';
@@ -36,7 +36,7 @@ const configSchema = Joi.object({
 
 export class ConfigService {
   private appConfig: AppConfig | null = null;
-  private watcher: chokidar.FSWatcher | null = null;
+  private watcher: FSWatcher | null = null;
 
   async loadConfig(): Promise<void> {
     try {
@@ -92,7 +92,7 @@ export class ConfigService {
       }
     });
 
-    this.watcher.on('error', (error) => {
+    this.watcher.on('error', (error: unknown) => {
       logger.error('Config file watcher error', { error });
     });
   }

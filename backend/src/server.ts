@@ -71,8 +71,8 @@ async function startServer() {
     const sessionStore = await createSessionStore();
     const sessionMiddleware = createSessionMiddleware(sessionStore);
 
-    // Trust proxy - required when behind reverse proxy (Traefik/nginx)
-    app.set('trust proxy', true);
+    // Trust proxy - trust only the first proxy (Traefik)
+    app.set('trust proxy', 1);
 
     app.use(helmetMiddleware);
     app.use(corsMiddleware);

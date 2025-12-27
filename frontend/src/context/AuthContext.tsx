@@ -25,9 +25,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<UserInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const checkingRef = React.useRef(false);
 
   const checkAuth = useCallback(async () => {
+    // Prevent concurrent auth checks
+    if (checkingRef.current) {
+      return;
+    }
+
     try {
+      checkingRef.current = true;
       setIsLoading(true);
       setError(null);
       const status = await authApi.checkStatus();
@@ -39,6 +46,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(null);
     } finally {
       setIsLoading(false);
+      checkingRef.current = false;
     }
   }, []);
 

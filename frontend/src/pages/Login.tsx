@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
 export const Login: React.FC = () => {
-  const { isAuthenticated, login, checkAuth } = useAuth();
+  const { isAuthenticated, isLoading, login, checkAuth } = useAuth();
   const navigate = useNavigate();
 
   // Re-check auth status when landing on login page to clear stale state
@@ -12,10 +12,12 @@ export const Login: React.FC = () => {
   }, [checkAuth]);
 
   useEffect(() => {
-    if (isAuthenticated) {
+    // Only redirect if we're done loading AND authenticated
+    // This prevents redirecting with stale state before checkAuth completes
+    if (!isLoading && isAuthenticated) {
       navigate('/', { replace: true });
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, isLoading, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center px-4">

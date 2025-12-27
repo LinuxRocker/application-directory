@@ -3,7 +3,7 @@ import YAML from 'yaml';
 import Joi from 'joi';
 import chokidar from 'chokidar';
 import { config } from '../config';
-import { AppConfig, CategoryData } from '../types';
+import { AppConfig, Category, CategoryData } from '../types';
 import logger from '../utils/logger';
 
 const configSchema = Joi.object({

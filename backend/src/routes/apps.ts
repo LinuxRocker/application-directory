@@ -20,7 +20,7 @@ router.get('/', requireAuth, (req: Request, res: Response) => {
   }
 });
 
-router.get('/categories', requireAuth, (req: Request, res: Response) => {
+router.get('/categories', requireAuth, (_req: Request, res: Response) => {
   try {
     const categories = configService.getCategories();
 
@@ -49,7 +49,7 @@ router.get('/search', requireAuth, (req: Request, res: Response) => {
     });
   } catch (error) {
     logger.error('Error in search route', { error });
-    res.status(500).json({ error: 'Failed to search apps' });
+    return res.status(500).json({ error: 'Failed to search apps' });
   }
 });
 

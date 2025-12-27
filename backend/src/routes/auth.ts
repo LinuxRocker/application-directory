@@ -99,7 +99,7 @@ router.post('/logout', async (req: Request, res: Response) => {
       logger.info('User logged out', { userId: req.session.userId });
     }
 
-    req.session.destroy((err) => {
+    return req.session.destroy((err) => {
       if (err) {
         logger.error('Failed to destroy session', { error: err });
         return res.status(500).json({ error: 'Failed to logout' });
@@ -109,7 +109,7 @@ router.post('/logout', async (req: Request, res: Response) => {
     });
   } catch (error) {
     logger.error('Error in logout route', { error });
-    res.status(500).json({ error: 'Failed to logout' });
+    return res.status(500).json({ error: 'Failed to logout' });
   }
 });
 

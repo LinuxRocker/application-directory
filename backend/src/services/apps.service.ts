@@ -1,5 +1,5 @@
 import { configService } from './config.service';
-import { Application, Category, CategoryWithApps } from '../types';
+import { Application, CategoryWithApps } from '../types';
 import logger from '../utils/logger';
 
 export class AppsService {

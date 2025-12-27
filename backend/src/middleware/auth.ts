@@ -56,11 +56,11 @@ export async function requireAuth(
     next();
   } catch (error) {
     logger.error('Error in auth middleware', { error });
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 }
 
-export function optionalAuth(req: Request, res: Response, next: NextFunction) {
+export function optionalAuth(req: Request, _res: Response, next: NextFunction) {
   if (req.session.accessToken && req.session.tokenExpiry) {
     const isValid = authService.validateToken(
       req.session.accessToken,

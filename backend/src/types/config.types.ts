@@ -5,7 +5,6 @@ export interface Application {
   url: string;
   icon: string;
   groups?: string[];
-  adminGroups?: string[];
   external?: boolean;
 }
 
@@ -14,6 +13,7 @@ export interface CategoryData {
   icon: string;
   order: number;
   description?: string;
+  adminGroups?: string[];
   apps: Application[];
 }
 

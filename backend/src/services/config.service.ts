@@ -15,6 +15,7 @@ const configSchema = Joi.object({
         icon: Joi.string().required(),
         order: Joi.number().required(),
         description: Joi.string(),
+        adminGroups: Joi.array().items(Joi.string()),
         apps: Joi.array()
           .items(
             Joi.object({
@@ -24,7 +25,6 @@ const configSchema = Joi.object({
               url: Joi.string().uri().required(),
               icon: Joi.string().required(),
               groups: Joi.array().items(Joi.string()),
-              adminGroups: Joi.array().items(Joi.string()),
               external: Joi.boolean(),
             })
           )

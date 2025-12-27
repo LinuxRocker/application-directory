@@ -5,9 +5,9 @@ import logger from '../utils/logger';
 export class AppsService {
   /**
    * Get all apps accessible to a user based on their groups
-   * - If app has NO groups/adminGroups: accessible to everyone (public)
+   * - If app has NO groups: accessible to everyone (public)
    * - If app has groups: user must be in one of those groups
-   * - If user is admin for ANY app in category: sees ALL apps in that category
+   * - If user is admin of category: sees ALL apps in that category
    */
   getAppsForUser(userGroups: string[]): CategoryWithApps[] {
     logger.debug('Filtering apps for user', {
@@ -26,7 +26,7 @@ export class AppsService {
       }
 
       const isAdminOfCategory = this.isUserAdminOfCategory(
-        categoryData.apps,
+        categoryData.adminGroups,
         userGroups
       );
 
@@ -66,20 +66,16 @@ export class AppsService {
   }
 
   /**
-   * Check if user is admin for ANY app in the given category
+   * Check if user is admin of the given category
    */
   private isUserAdminOfCategory(
-    apps: Application[],
+    adminGroups: string[] | undefined,
     userGroups: string[]
   ): boolean {
-    return apps.some((app) => {
-      if (!app.adminGroups || app.adminGroups.length === 0) {
-        return false;
-      }
-      return app.adminGroups.some((adminGroup) =>
-        userGroups.includes(adminGroup)
-      );
-    });
+    if (!adminGroups || adminGroups.length === 0) {
+      return false;
+    }
+    return adminGroups.some((adminGroup) => userGroups.includes(adminGroup));
   }
 
   /**

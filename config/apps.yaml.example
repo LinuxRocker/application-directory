@@ -1,7 +1,8 @@
 # Application Directory Configuration
 # Hierarchical category-based application structure
-# If groups/adminGroups are not specified, the app is accessible to all authenticated users
+# If groups are not specified on an app, it is accessible to all authenticated users
 # Keycloak groups have a leading slash (e.g., /grafana-admin)
+# adminGroups at category level grant access to ALL apps in that category
 
 categories:
   media:
@@ -9,6 +10,8 @@ categories:
     icon: "fa-film"
     order: 1
     description: "Streaming and media management"
+    adminGroups:
+      - "/media-admin"
     apps:
       - id: "plex"
         name: "Plex"
@@ -24,14 +27,14 @@ categories:
         icon: "fa-tv"
         groups:
           - "/media-users"
-        adminGroups:
-          - "/media-admin"
 
   productivity:
     name: "Productivity"
     icon: "fa-briefcase"
     order: 2
     description: "Productivity and collaboration tools"
+    adminGroups:
+      - "/productivity-admin"
     apps:
       - id: "nextcloud"
         name: "Nextcloud"
@@ -40,14 +43,14 @@ categories:
         icon: "fa-cloud"
         groups:
           - "/nextcloud-users"
-        adminGroups:
-          - "/nextcloud-admin"
 
   monitoring:
     name: "Monitoring"
     icon: "fa-chart-line"
     order: 3
     description: "Monitoring and observability"
+    adminGroups:
+      - "/grafana-admin"
     apps:
       - id: "grafana"
         name: "Grafana"
@@ -57,8 +60,6 @@ categories:
         groups:
           - "/grafana-viewer"
           - "/grafana-editor"
-        adminGroups:
-          - "/grafana-admin"
 
   development:
     name: "Development"
@@ -91,6 +92,8 @@ categories:
     icon: "fa-screwdriver-wrench"
     order: 6
     description: "Administrative tools"
+    adminGroups:
+      - "/sysadmins"
     apps:
       - id: "portainer"
         name: "Portainer"
@@ -98,6 +101,4 @@ categories:
         url: "https://portainer.example.com"
         icon: "fa-docker"
         groups:
-          - "/sysadmins"
-        adminGroups:
           - "/sysadmins"

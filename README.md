@@ -331,31 +331,32 @@ docker-compose -f docker-compose.prod.yml up -d
 
 **Restricted Apps (Groups Specified)**
 ```yaml
-- id: "sonarr"
-  name: "Sonarr"
-  url: "https://sonarr.example.com"
-  icon: "fa-satellite-dish"
-  groups: ["media-power-users"]  # Only these users see it
+- id: "grafana"
+  name: "Grafana"
+  url: "https://grafana.example.com"
+  icon: "fa-chart-bar"
+  groups: ["/monitoring-viewers"]  # Only these users see it
 ```
 
 **Admin Override**
 
-Define `adminGroups` to give users access to ALL apps in a category:
+Define `adminGroups` at the category level to give users access to ALL apps in that category:
 
 ```yaml
 categories:
-  media:
+  monitoring:
+    name: "Monitoring"
+    adminGroups:
+      - "/monitoring-admins"  # Users in this group see ALL Monitoring apps
     apps:
-      - id: "plex"
-        groups: ["media-users"]
-        adminGroups: ["media-admins"]  # Admins see ALL Media apps
+      - id: "grafana"
+        groups: ["/monitoring-viewers"]
 
-      - id: "sonarr"
-        groups: ["media-power-users"]
-        adminGroups: ["media-admins"]  # Same admin group = sees everything
+      - id: "prometheus"
+        groups: ["/monitoring-power-users"]
 ```
 
-If a user is in `media-admins`, they see Plex, Sonarr, and ALL other apps in the Media category, regardless of individual `groups` settings.
+If a user is in `/monitoring-admins`, they see Grafana, Prometheus, and ALL other apps in the Monitoring category, regardless of individual app `groups` settings.
 
 ### Category Visibility
 

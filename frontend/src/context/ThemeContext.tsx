@@ -63,17 +63,16 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   useEffect(() => {
     const root = document.documentElement;
 
+    console.log('Applying theme:', effectiveTheme, 'Theme setting:', theme);
+
     if (effectiveTheme === 'dark') {
       root.classList.add('dark');
     } else {
       root.classList.remove('dark');
     }
 
-    // Also apply to body for background
-    document.body.className = effectiveTheme === 'dark'
-      ? 'bg-gray-900 text-gray-50'
-      : 'bg-gray-50 text-gray-900';
-  }, [effectiveTheme]);
+    console.log('HTML classes:', root.className);
+  }, [effectiveTheme, theme]);
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);

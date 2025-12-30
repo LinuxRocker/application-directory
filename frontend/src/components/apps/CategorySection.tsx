@@ -19,23 +19,23 @@ export const CategorySection: React.FC<CategorySectionProps> = ({
         className="flex items-center justify-between w-full mb-4 group"
       >
         <div className="flex items-center space-x-3">
-          <span className="text-3xl text-primary-600">
+          <span className="text-3xl text-primary-600 dark:text-primary-400">
             <i className={`fa-solid ${category.icon}`}></i>
           </span>
           <div className="text-left">
-            <h2 className="text-2xl font-bold text-gray-900 group-hover:text-primary-600 transition-colors">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
               {category.name}
             </h2>
             {category.description && (
-              <p className="text-sm text-gray-500">{category.description}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{category.description}</p>
             )}
           </div>
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200">
             {apps.length}
           </span>
         </div>
         <svg
-          className={`w-6 h-6 text-gray-400 transition-transform duration-200 ${
+          className={`w-6 h-6 text-gray-400 dark:text-gray-500 transition-transform duration-200 ${
             isExpanded ? 'transform rotate-180' : ''
           }`}
           fill="none"

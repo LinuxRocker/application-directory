@@ -61,10 +61,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = useCallback(async () => {
     try {
-      await authApi.logout();
-      setIsAuthenticated(false);
-      setUser(null);
-      window.location.href = '/login';
+      // Redirect to logout endpoint which will handle Keycloak logout
+      window.location.href = '/api/auth/logout';
     } catch (err) {
       setError('Failed to logout');
     }

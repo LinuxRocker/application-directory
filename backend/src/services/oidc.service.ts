@@ -113,6 +113,32 @@ export class OidcService {
     }
   }
 
+  getLogoutUrl(idToken: string, postLogoutRedirectUri: string): string {
+    try {
+      const config = getOidcClient();
+      const endSessionEndpoint = config.serverMetadata().end_session_endpoint;
+
+      if (!endSessionEndpoint) {
+        logger.warn('No end_session_endpoint found in OIDC metadata');
+        return postLogoutRedirectUri;
+      }
+
+      const logoutUrl = new URL(endSessionEndpoint);
+      logoutUrl.searchParams.set('id_token_hint', idToken);
+      logoutUrl.searchParams.set('post_logout_redirect_uri', postLogoutRedirectUri);
+
+      logger.info('Generated logout URL', {
+        endpoint: endSessionEndpoint,
+        postLogoutRedirectUri,
+      });
+
+      return logoutUrl.toString();
+    } catch (error) {
+      logger.error('Failed to generate logout URL', { error });
+      return postLogoutRedirectUri;
+    }
+  }
+
   async revokeToken(_token: string): Promise<void> {
     try {
       logger.info('Revoking token');

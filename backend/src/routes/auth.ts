@@ -101,25 +101,40 @@ router.get('/callback', authRateLimiter, async (req: Request, res: Response) => 
   }
 });
 
-router.post('/logout', async (req: Request, res: Response) => {
+router.get('/logout', async (req: Request, res: Response) => {
   try {
-    if (req.session.accessToken) {
-      await oidcService.revokeToken(req.session.accessToken);
-      logger.info('User logged out', { userId: req.session.userId });
-    }
+    const idToken = req.session.idToken;
+    const userId = req.session.userId;
 
+    // Destroy the session
     req.session.destroy((err) => {
       if (err) {
         logger.error('Failed to destroy session', { error: err });
-        return res.status(500).json({ error: 'Failed to logout' });
       }
-      res.clearCookie('homelab.sid');
-      return res.json({ message: 'Logged out successfully' });
     });
-    return; // Explicitly return to satisfy TypeScript
+    res.clearCookie('homelab.sid');
+
+    // Redirect to Keycloak logout
+    if (idToken) {
+      const frontendUrl = process.env.CORS_ORIGIN || 'http://localhost:5173';
+      const postLogoutRedirectUri = `${frontendUrl}/login`;
+      const logoutUrl = oidcService.getLogoutUrl(idToken, postLogoutRedirectUri);
+
+      logger.info('Redirecting to Keycloak logout', {
+        userId,
+        postLogoutRedirectUri,
+      });
+
+      return res.redirect(logoutUrl);
+    } else {
+      logger.warn('No ID token found in session, redirecting to login directly');
+      const frontendUrl = process.env.CORS_ORIGIN || 'http://localhost:5173';
+      return res.redirect(`${frontendUrl}/login`);
+    }
   } catch (error) {
     logger.error('Error in logout route', { error });
-    return res.status(500).json({ error: 'Failed to logout' });
+    const frontendUrl = process.env.CORS_ORIGIN || 'http://localhost:5173';
+    return res.redirect(`${frontendUrl}/login`);
   }
 });
 
